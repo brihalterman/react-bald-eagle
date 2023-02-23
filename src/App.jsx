@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TodoList from './TodoList';
 import AddTodoForm from "./AddTodoForm";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
 
@@ -8,27 +9,17 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Remove the placeholder "Promise"
-      // new Promise ((resolve, reject) => {
-      //   // ***Mimic a loading delay***
-      //   setTimeout(() => {
-      //     resolve({ data: {todoList: JSON.parse(localStorage.getItem("savedTodoList")) || []}, });
-      //   }, 2000)
 
-    // Using the Fetch API, create a "GET" request
-    fetch(`https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/Default`, { //url: the url of your request
+    fetch(`https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/Default`, {
       method: 'GET',
-      // add the property 'headers' as an object
       headers: {
-        'Authorization': `Bearer ${process.env.REACT_APP_AIRTABLE_API_KEY}` //the token to authorize the request
+        'Authorization': `Bearer ${process.env.REACT_APP_AIRTABLE_API_KEY}`
       },
     })
-    // Chain a then method to your fetch call and pass it a function that returns the response JSON data
     .then((response) => {
       return response.json();
     })
     .then((result) => {
-    // Update the setToDoList call to reference the new result format
     setTodoList(result.records);
     setIsLoading(false);
   });
@@ -53,19 +44,29 @@ function App() {
   };
 
   return (
-    <React.Fragment>
-      <h1>Todo List</h1>
-        <AddTodoForm onAddTodo={addTodo} />
-        <div>
-          {isLoading ? 
-            <p>Loading...</p>
-           : 
-            <TodoList todoList={todoList} onRemoveTodo={removeTodo}/>
-          }
-        </div>
-    </React.Fragment>
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element= {
+          <React.Fragment>
+            <h1>Todo List</h1>
+            <AddTodoForm onAddTodo={addTodo} />
+            <div>
+              {isLoading ? 
+                <p>Loading...</p>
+                : 
+                <TodoList todoList={todoList} onRemoveTodo={removeTodo}/>
+              }
+            </div>
+          </React.Fragment>
+        } />
+        {/* Create a new Route with path "/new" */}
+        {/* Create a level-one heading with text "New Todo List" */}
+        <Route path="/new" element= {
+          <h1>New Todo List</h1>
+        }/>
+      </Routes>
+    </BrowserRouter>
   );
-
 };
 
 export default App;
